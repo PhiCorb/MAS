@@ -87,4 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# PyCharm non-share file
 .idea/workspace.xml
+
+# Test samples
+*.exe
