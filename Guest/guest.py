@@ -12,7 +12,7 @@ def progress_bar(value, endvalue, length=20):
     sys.stdout.write("\r\tWaiting before execution: [{}] {}%".format(progress + spaces, int(round(percent * 100))))
     sys.stdout.flush()
 
-base_path = "D:\\Phil Corbett\\Documents\\GitHub\\MAS\\Guest\\"
+base_path = "D:\\Phil Corbett\\Documents\\GitHub\\MAS\\guest\\"
 json_name = "config.json"
 
 with open(base_path + json_name) as json_file:
