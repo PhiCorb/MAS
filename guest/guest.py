@@ -24,5 +24,3 @@ if config["exec"]:  # Sample can be executed with subprocess.call()
         progress_bar(i, 5)
         sleep(1)
     subprocess.call(base_path + config["filename"], shell=True)
-
-# TODO: Add guest execution code

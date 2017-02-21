@@ -1,0 +1,4 @@
+{
+  "tcpdump": "/usr/sbin/tcpdump",
+  "interface": "vmnet8"
+}

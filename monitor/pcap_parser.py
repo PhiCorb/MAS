@@ -1,6 +1,8 @@
 import pyshark
 
-cap = pyshark.FileCapture('/home/phil/Desktop/test1.cap', display_filter="http")
+cap_file = "/home/phil/Desktop/test1.cap"
+
+cap = pyshark.FileCapture(cap_file, display_filter="http")
 hosts = []
 
 for x in cap:
@@ -12,7 +14,7 @@ print("The following hosts were contacted (HTTP):")
 for i in hosts:
     print("\t" + i)
 
-cap = pyshark.FileCapture('/home/phil/Desktop/test1.cap', display_filter="dns")
+cap = pyshark.FileCapture(cap_file, display_filter="dns")
 dns = []
 
 for x in cap:
