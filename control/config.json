@@ -1,0 +1,5 @@
+{
+  "sample_root": "/mas_data/samples/",
+  "vm_root": "/mas_data/vms/",
+  "capture_root": "/mas_data/packets/"
+}
