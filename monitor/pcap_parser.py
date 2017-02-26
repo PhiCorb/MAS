@@ -7,16 +7,17 @@ colorama.init()
 
 def cap_http(pcap_file):
     cap = pyshark.FileCapture(pcap_file, display_filter="http")
-    hosts = []
+    http = []
 
     for x in cap:
         if x["ip"].src == "172.16.168.128":
-            if x["http"].host not in hosts:
-                hosts.append(x["http"].host)
+            if x["http"].host not in http:
+                http.append(x["http"].host)
 
     print("The following hosts were contacted (HTTP):")
-    for i in hosts:
+    for i in http:
         print("\t" + i)
+    return http
 
 
 def cap_dns(pcap_file):
@@ -30,6 +31,7 @@ def cap_dns(pcap_file):
     print("The following DNS resolutions were requested:")
     for i in dns:
         print("\t" + i)
+        return dns
 
 
 if __name__ == "__main__":
