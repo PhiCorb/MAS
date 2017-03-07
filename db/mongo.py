@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import gridfs
 import colorama
 
 colorama.init()
@@ -7,6 +8,9 @@ colorama.init()
 client = MongoClient("localhost", 27017)
 db = client.mas
 collection = db.jobs
+
+fs_db = client.mas_samples
+fs = gridfs.GridFS(fs_db)
 
 
 def construct(filename, status, machine, date_time, md5, duration, addresses, pcap=None):
@@ -24,6 +28,23 @@ def construct(filename, status, machine, date_time, md5, duration, addresses, pc
 def add(post):
     post_id = collection.insert_one(post).inserted_id
     return post_id
+
+
+def find_one(bson):
+    post = collection.find_one(bson)
+    return post
+
+
+def fs_put(file):
+    return fs.put(file)
+
+
+def fs_get(obj_id):
+    return fs.get(obj_id)
+
+
+def fs_delete(obj_id):
+    return fs.delete(obj_id)
 
 
 def modify(post_id, updated_bson):

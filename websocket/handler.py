@@ -1,7 +1,9 @@
 from sys import stdout
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import gridfs
 import datetime
+import base64
 import json
 
 # # Count from 1 to 10 with a sleep
@@ -13,6 +15,11 @@ import json
 client = MongoClient("localhost", 27017)
 db = client.mas
 collection = db.jobs
+
+fs_db = client.mas_samples
+fs = gridfs.GridFS(fs_db)
+
+b64file = ""
 
 while True:
     command = input()
@@ -60,3 +67,47 @@ while True:
         active_post.update({"date_time": active_post["date_time"].strftime("%Y-%m-%d %H:%M:%S")})
         print(json.dumps(active_post))
         stdout.flush()
+    elif command == "upload":
+        analysed = collection.find({"status": "Finished"}).count()
+        processing = collection.find({"status": "Running"}).count()
+        waiting = collection.find({"status": "Waiting"}).count()
+        response = "{} {} {}".format(analysed, processing, waiting)
+        vms = ["XP-1"]  # TODO: read in from JSON
+        for vm in vms:
+            response += " {}".format(vm)
+        print(response)
+        stdout.flush()
+    elif command == "file":
+        # with open("/home/phil/Desktop/test.log", "a") as file:
+        #     file.write(command)
+        sample_filename = input()
+        sample_machine = input()
+        sample_duration = input()
+        while command != "file_done":
+            command = command.split(",", 1)
+            if len(command) == 2:
+                b64file += command[1]
+            else:
+                b64file += command[0]
+            command = input()
+        grid_file = fs.put(base64.b64decode(b64file))
+        post = {
+            "filename": sample_filename,
+            "machine": sample_machine,
+            "duration": sample_duration,
+            "date_time": datetime.datetime.utcnow(),
+            "status": "Waiting",
+            "sample_id": grid_file
+        }
+        post_id = collection.insert_one(post).inserted_id
+        # with open("/home/phil/Desktop/test_decode.log", "wb") as file:
+        #     file.write(base64.b64decode(b64file))
+    else:
+        with open("/home/phil/Desktop/test.log", "a") as file:
+            file.write(command)
+        command = command.split(",", 1)
+        if len(command) == 2:
+            b64file += command[1]
+        else:
+            b64file += command[0]
+
