@@ -120,12 +120,23 @@ while True:
         post_id = collection.insert_one(post).inserted_id
         # with open("/home/phil/Desktop/test_decode.log", "wb") as file:
         #     file.write(base64.b64decode(b64file))
-    else:
-        with open("/home/phil/Desktop/test.log", "a") as file:
-            file.write(command)
-        command = command.split(",", 1)
-        if len(command) == 2:
-            b64file += command[1]
-        else:
-            b64file += command[0]
+    elif command == "pcap":
+        target_id = input()
+        active_post = collection.find_one({"_id": ObjectId(target_id)}, {"pcap": 1})
+        pcap = fs.get(active_post["pcap"])
+        b64file = base64.b64encode(pcap.read()).decode("ascii")
+        chunk_size = 130000
+        for i in range(0, len(b64file), chunk_size):
+            print(b64file[i:i+chunk_size])
+            stdout.flush()
+        print("finished.")
+        stdout.flush()
+    # else:
+    #     with open("/home/phil/Desktop/test.log", "a") as file:
+    #         file.write(command)
+    #     command = command.split(",", 1)
+    #     if len(command) == 2:
+    #         b64file += command[1]
+    #     else:
+    #         b64file += command[0]
 
