@@ -38,7 +38,7 @@ while True:
         with open(sample_root + sample_filename, "wb") as outfile:
             outfile.write(db.mongo.fs_get(sample_id).read())
         extension = os.path.splitext(sample_root + sample_filename)[1]
-        if extension == ".exe" or extension == ".msi":
+        if extension == ".exe" or extension == ".msi" or extension == ".bat":
             executable = True
         else:
             executable = False
@@ -62,18 +62,19 @@ while True:
 
         print("\n")
         for i in range(0, int(active_post["duration"]) + 1):
-            misc.progress_bar.progress_bar(i, active_post["duration"], "Waiting before terminating")
+            misc.progress_bar.progress_bar(i, int(active_post["duration"]), "Waiting before terminating")
             sleep(1)
 
         packet_capture.end_capture()
         vm_control.end_vm(vm_path)
+        sleep(3)
         vm_control.restore_vm(vm_path, "Snapshot")
 
         dns = pcap_parser.cap_dns(capture_root + "cap.pcap")
-        http = pcap_parser.cap_http(capture_root + "cap.pcap")
+        # http = pcap_parser.cap_http(capture_root + "cap.pcap")
         with open(capture_root + "cap.pcap", "rb") as file:
             pcap_id = db.mongo.fs_put(file)
 
-        db.mongo.modify(active_post["_id"], {"$set": {"status": "Finished", "addresses": http, "pcap": pcap_id}})
+        db.mongo.modify(active_post["_id"], {"$set": {"status": "Finished", "addresses": dns, "pcap": pcap_id}})
         db.mongo.modify(active_post["_id"], {"$unset": {"sample_id": ""}})
         db.mongo.fs_delete(sample_id)

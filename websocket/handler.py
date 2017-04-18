@@ -62,7 +62,12 @@ while True:
         stdout.flush()
     elif command == "details":
         target_id = input()
-        active_post = collection.find_one({"_id": ObjectId(target_id)})
+        active_post = collection.find_one({"_id": ObjectId(target_id)}, {"pcap": 0, "sample_id": 0})
+        # if active_post["status"] == "Waiting":
+        #     print("WAITING")
+        # elif active_post["status"] == "Running":
+        #     print("RUNNING")
+        # else:
         active_post.update({"_id": str(active_post["_id"])})
         active_post.update({"date_time": active_post["date_time"].strftime("%Y-%m-%d %H:%M:%S")})
         print(json.dumps(active_post))
@@ -90,7 +95,20 @@ while True:
             else:
                 b64file += command[0]
             command = input()
-        grid_file = fs.put(base64.b64decode(b64file))
+
+        # with open("/home/phil/Desktop/out.exe", "wb") as file:
+        #     out = base64.b64decode(b64file)
+        #     if out[0] == 0x7e and out[1] == 0x29 and out[2] == 0x5e:
+        #         out = out[3:]
+        #     else:
+        #         print("Hex bug not matched. [0] = {}, [1] = {}, [2] = {}".format(out[0], out[1], out[2]))
+        #     file.write(out)
+        #     grid_file = fs.put(out)
+
+        out = base64.b64decode(b64file)
+        if out[0] == 0x7e and out[1] == 0x29 and out[2] == 0x5e:
+            out = out[3:]
+        grid_file = fs.put(out)
         post = {
             "filename": sample_filename,
             "machine": sample_machine,
