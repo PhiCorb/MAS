@@ -9,6 +9,7 @@ import monitor.vm_control as vm_control
 import db.mongo
 import misc.progress_bar
 import misc.md5
+from datadog import statsd
 
 colorama.init()
 valid = False
@@ -71,6 +72,9 @@ while True:
         vm_control.restore_vm(vm_path, "Snapshot")
 
         dns = pcap_parser.cap_dns(capture_root + "cap.pcap")
+        if os.path.getsize(capture_root + "cap.pcap") < 10000000:
+            http = pcap_parser.cap_http(capture_root + "cap.pcap")
+            dns += http
         # http = pcap_parser.cap_http(capture_root + "cap.pcap")
         with open(capture_root + "cap.pcap", "rb") as file:
             pcap_id = db.mongo.fs_put(file)
@@ -78,3 +82,4 @@ while True:
         db.mongo.modify(active_post["_id"], {"$set": {"status": "Finished", "addresses": dns, "pcap": pcap_id}})
         db.mongo.modify(active_post["_id"], {"$unset": {"sample_id": ""}})
         db.mongo.fs_delete(sample_id)
+        statsd.increment('samples.analysed', 1)

@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import gridfs
 import colorama
+from datadog import statsd
 
 colorama.init()
 
@@ -27,28 +28,34 @@ def construct(filename, status, machine, date_time, md5, duration, addresses, pc
 
 def add(post):
     post_id = collection.insert_one(post).inserted_id
+    statsd.increment('mongo.requests', 1)
     return post_id
 
 
 def find_one(bson):
     post = collection.find_one(bson)
+    statsd.increment('mongo.requests', 1)
     return post
 
 
 def fs_put(file):
+    statsd.increment('mongo.requests', 1)
     return fs.put(file)
 
 
 def fs_get(obj_id):
+    statsd.increment('mongo.requests', 1)
     return fs.get(obj_id)
 
 
 def fs_delete(obj_id):
+    statsd.increment('mongo.requests', 1)
     return fs.delete(obj_id)
 
 
 def modify(post_id, updated_bson):
     result = collection.update_one({"_id": ObjectId(post_id)}, updated_bson)
+    statsd.increment('mongo.requests', 1)
     if result.matched_count == 1 and result.modified_count == 1:
         return 1
     else:
@@ -57,6 +64,7 @@ def modify(post_id, updated_bson):
 
 def delete(post_id):
     result = collection.delete_one({"_id": ObjectId(post_id)})
+    statsd.increment('mongo.requests', 1)
     if result.deleted_count == 1:
         return 1
     else:

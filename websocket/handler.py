@@ -5,6 +5,7 @@ import gridfs
 import datetime
 import base64
 import json
+from datadog import statsd
 
 # # Count from 1 to 10 with a sleep
 # for count in range(0, 10):
@@ -28,10 +29,13 @@ while True:
         analysed = collection.find({"status": "Finished"}).count()
         processing = collection.find({"status": "Running"}).count()
         waiting = collection.find({"status": "Waiting"}).count()
+        statsd.increment('mongo.requests', 3)
         print("{} {} {}".format(analysed, processing, waiting))
+        statsd.increment('server.commands', 1)
         stdout.flush()
     elif command == "active":
         active_cursor = collection.find({"status": "Running"}, {"filename": 1, "machine": 1, "date_time": 1})
+        statsd.increment('mongo.requests', 1)
         active_list = []
         for post in active_cursor:
             active_list.append(post)
@@ -39,9 +43,11 @@ while True:
             post.update({"_id": str(post["_id"])})
             post.update({"date_time": post["date_time"].strftime("%Y-%m-%d %H:%M:%S")})
         print(json.dumps(active_list))
+        statsd.increment('server.commands', 1)
         stdout.flush()
     elif command == "waiting":
         active_cursor = collection.find({"status": "Waiting"}, {"filename": 1, "machine": 1, "date_time": 1})
+        statsd.increment('mongo.requests', 1)
         active_list = []
         for post in active_cursor:
             active_list.append(post)
@@ -49,9 +55,11 @@ while True:
             post.update({"_id": str(post["_id"])})
             post.update({"date_time": post["date_time"].strftime("%Y-%m-%d %H:%M:%S")})
         print(json.dumps(active_list))
+        statsd.increment('server.commands', 1)
         stdout.flush()
     elif command == "jobs":
         active_cursor = collection.find({}, {"filename": 1, "machine": 1, "date_time": 1})
+        statsd.increment('mongo.requests', 1)
         active_list = []
         for post in active_cursor:
             active_list.append(post)
@@ -59,10 +67,12 @@ while True:
             post.update({"_id": str(post["_id"])})
             post.update({"date_time": post["date_time"].strftime("%Y-%m-%d %H:%M:%S")})
         print(json.dumps(active_list))
+        statsd.increment('server.commands', 1)
         stdout.flush()
     elif command == "details":
         target_id = input()
         active_post = collection.find_one({"_id": ObjectId(target_id)}, {"pcap": 0, "sample_id": 0})
+        statsd.increment('mongo.requests', 1)
         # if active_post["status"] == "Waiting":
         #     print("WAITING")
         # elif active_post["status"] == "Running":
@@ -71,16 +81,20 @@ while True:
         active_post.update({"_id": str(active_post["_id"])})
         active_post.update({"date_time": active_post["date_time"].strftime("%Y-%m-%d %H:%M:%S")})
         print(json.dumps(active_post))
+        statsd.increment('samples.viewed', 1)
+        statsd.increment('server.commands', 1)
         stdout.flush()
     elif command == "upload":
         analysed = collection.find({"status": "Finished"}).count()
         processing = collection.find({"status": "Running"}).count()
         waiting = collection.find({"status": "Waiting"}).count()
+        statsd.increment('mongo.requests', 3)
         response = "{} {} {}".format(analysed, processing, waiting)
         vms = ["XP-1"]  # TODO: read in from JSON
         for vm in vms:
             response += " {}".format(vm)
         print(response)
+        statsd.increment('server.commands', 1)
         stdout.flush()
     elif command == "file":
         # with open("/home/phil/Desktop/test.log", "a") as file:
@@ -118,18 +132,23 @@ while True:
             "sample_id": grid_file
         }
         post_id = collection.insert_one(post).inserted_id
+        statsd.increment('mongo.requests', 2)
+        statsd.increment('samples.added', 1)
+        statsd.increment('server.commands', 1)
         # with open("/home/phil/Desktop/test_decode.log", "wb") as file:
         #     file.write(base64.b64decode(b64file))
     elif command == "pcap":
         target_id = input()
         active_post = collection.find_one({"_id": ObjectId(target_id)}, {"pcap": 1})
         pcap = fs.get(active_post["pcap"])
+        statsd.increment('mongo.requests', 2)
         b64file = base64.b64encode(pcap.read()).decode("ascii")
         chunk_size = 130000
         for i in range(0, len(b64file), chunk_size):
             print(b64file[i:i+chunk_size])
             stdout.flush()
         print("finished.")
+        statsd.increment('server.commands', 1)
         stdout.flush()
     # else:
     #     with open("/home/phil/Desktop/test.log", "a") as file:
