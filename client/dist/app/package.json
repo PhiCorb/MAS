@@ -1,0 +1,18 @@
+{
+  "name": "mas-client",
+  "version": "1.0.0",
+  "description": "Malware analysis system client",
+  "main": "app.js",
+  "author": "Phil Corbett",
+  "scripts": {
+    "start": "electron .",
+    "test": "xo"
+  },
+  "devDependencies": {
+    "xo": "^0.17.1"
+  },
+  "xo": {
+    "envs": ["browser"],
+    "quotes": ["error", "double"]
+  }
+}

@@ -1,0 +1,76 @@
+body {
+    background-color: #333333;
+}
+
+.shown {
+    display: block;
+    opacity: 1;
+}
+
+.hidden {
+    display: none;
+}
+
+.transition.hidden {
+    display: block;
+    opacity: 0;
+}
+
+.transition {
+    transition: opacity 1s ease;
+}
+
+.splash {
+    /*animation: fadein 0.3s linear;*/
+    color: white;
+}
+
+.splash-title {
+    text-align: center;
+    padding-top: 10%;
+    margin-bottom: 35px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
+    font-size: 80px;
+}
+
+.splash-content {
+    text-align: center;
+    font-weight: 300;
+    font-family: 'OpenSans', sans-serif;
+}
+
+div#form-page {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    background-image: url("../app/img/form/footer_lodyas.png");
+}
+
+.form-title {
+    opacity: 0;
+    text-align: center;
+    padding-top: 3%;
+    margin-bottom: 20px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
+    font-size: 65px;
+    color: white;
+}
+
+.form-content {
+    opacity: 0;
+    text-align: center;
+    font-weight: 300;
+    font-family: 'OpenSans', sans-serif;
+    color: white;
+}
+
+form {
+    padding-left: 20%;
+    padding-right: 20%;
+    opacity: 0;
+}

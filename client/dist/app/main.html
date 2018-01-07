@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MAS Client</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/photon.min.css">
+    <link rel="stylesheet" href="css/main-extra.css">
+    <link rel="stylesheet" href="css/roboto.css">
+    <link rel="stylesheet" href="css/opensans.css">
+
+    <!-- Javascript -->
+    <script src="js/bson.js"></script>
+    <script src="js/setup-form.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/main-side-nav.js"></script>
+</head>
+<body>
+<div class="window">
+    <div class="window-content">
+        <div class="pane-group">
+            <div class="pane pane-sm sidebar">
+                <nav class="nav-group">
+                    <h5 class="nav-group-title">Navigation</h5>
+                    <span class="nav-group-item active" id="home_nav" onclick="changePane('home', 'home_nav')">
+                        <span class="icon icon-home"></span>
+                        Home
+                    </span>
+                    <span class="nav-group-item" id="active_nav" onclick="changePane('active', 'active_nav')">
+                        <span class="icon icon-arrows-ccw"></span>
+                        Active
+                    </span>
+                    <span class="nav-group-item" id="waiting_nav" onclick="changePane('waiting', 'waiting_nav')">
+                        <span class="icon icon-hourglass"></span>
+                        Waiting
+                    </span>
+                    <span class="nav-group-item" id="jobs_nav" onclick="changePane('jobs', 'jobs_nav')">
+                        <span class="icon icon-archive"></span>
+                        Jobs
+                    </span>
+                </nav>
+                <nav class="nav-group hidden" id="job_nav_group">
+                    <h5 class="nav-group-title">Job</h5>
+                    <span class="nav-group-item active" id="job_nav" onclick="changePane('job-overview', 'job_nav')">
+                        <span class="icon icon-doc-text"></span>
+                        Overview
+                    </span>
+                    <span class="nav-group-item" id="network_nav" onclick="changePane('job-network', 'network_nav')">
+                        <span class="icon icon-network"></span>
+                        Network
+                    </span>
+                </nav>
+            </div>
+
+            <div class="pane shown" id="home">
+                <h1 class="hero-number hero-green" id="analysedNum">-</h1>
+                <p class="hero-desc">samples analysed</p>
+                <h1 class="hero-number hero-blue" id="processingNum">-</h1>
+                <p class="hero-desc">samples processing</p>
+                <h1 class="hero-number hero-grey" id="waitingNum">-</h1>
+                <p class="hero-desc">waiting for machine</p>
+            </div>
+
+            <div class="pane hidden" id="active">
+                <table class="table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Machine</th>
+                        <th>Added</th>
+                    </tr>
+                    </thead>
+                    <tbody id="active-body">
+                    <tr onclick="changePane('job-overview', 'job_nav')">
+                        <td>6</td>
+                        <td>setup.msi</td>
+                        <td>XP-1</td>
+                        <td>26/12/16 11:23</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p class="nothing-text hidden" id="active-nothing">Nothing here...</p>
+            </div>
+
+            <div class="pane hidden" id="waiting">
+                <table class="table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Machine</th>
+                        <th>Added</th>
+                    </tr>
+                    </thead>
+                    <tbody id="waiting-body">
+                    </tbody>
+                </table>
+                <p class="nothing-text shown" id="waiting-nothing">Nothing here...</p>
+            </div>
+
+            <div class="pane hidden" id="jobs">
+                <table class="table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Machine</th>
+                        <th>Added</th>
+                    </tr>
+                    </thead>
+                    <tbody id="jobs-body">
+                    <tr onclick="changePane('job-overview', 'job_nav')">
+                        <td>1</td>
+                        <td>malware.exe</td>
+                        <td>XP-1</td>
+                        <td>26/12/16 11:23</td>
+                    </tr>
+                    <tr onclick="changePane('job-overview', 'job_nav')">
+                        <td>2</td>
+                        <td>legit_document.doc.exe</td>
+                        <td>W7-3</td>
+                        <td>26/12/16 11:23</td>
+                    </tr>
+                    <tr onclick="changePane('job-overview', 'job_nav')">
+                        <td>3</td>
+                        <td>FREE_SMILIES.bat</td>
+                        <td>W8-2</td>
+                        <td>26/12/16 11:23</td>
+                    </tr>
+                    <tr onclick="changePane('job-overview', 'job_nav')">
+                        <td>4</td>
+                        <td>McAfee PC Scanner Norton Kaspersky setup.exe</td>
+                        <td>Vista-1</td>
+                        <td>26/12/16 11:23</td>
+                    </tr>
+                    <tr onclick="changePane('job-overview', 'job_nav')">
+                        <td>5</td>
+                        <td>What-App Voicemail.mp3      .exe</td>
+                        <td>W10-1</td>
+                        <td>26/12/16 11:23</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p class="nothing-text hidden" id="jobs-nothing">Nothing here...</p>
+            </div>
+
+            <div class="pane hidden" id="job-overview">
+                <div class="pane-group">
+                    <div class="pane-one-third">
+                        <div class="hero-vertical-center">
+                            <h1 class="hero-number hero-number-small hero-green" id="statusHero">-</h1>
+                            <p class="hero-desc hero-desc-small">status</p>
+                            <h1 class="hero-number hero-number-small hero-orange" id="networkNum">-</h1>
+                            <p class="hero-desc hero-desc-small">addresses contacted</p>
+                            <h1 class="hero-number hero-number-small hero-grey" id="runtimeNum">-</h1>
+                            <p class="hero-desc hero-desc-small">analysis time</p>
+                        </div>
+                    </div>
+
+                    <div class="pane">
+                        <table class="table-striped">
+                            <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Value</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="overview-body">
+                            <tr>
+                                <td>ID</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Filename</td>
+                                <td class="selectable-text">-</td>
+                            </tr>
+                            <tr>
+                                <td>Machine</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Added</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>MD5</td>
+                                <td class="hash selectable-text">-</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pane hidden" id="job-network">
+                <div class="pane-group">
+                    <div class="pane">
+                        <div class="hero-vertical-center">
+                            <h1 class="hero-number hero-orange" id="addressNum">-</h1>
+                            <p class="hero-desc">addresses contacted</p>
+                        </div>
+                    </div>
+
+                    <div class="pane">
+                        <table class="table-striped">
+                            <thead>
+                            <tr>
+                                <th>Address</th>
+                            </tr>
+                            </thead>
+                            <tbody id="network-body">
+                            </tbody>
+                        </table>
+                        <p class="nothing-text shown" id="network-nothing">No DNS requests detected.<br>If this is unexpected, try looking in the PCAP.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pane hidden" id="upload">
+                <div class="pane-group">
+                    <div class="pane-one-third">
+                        <div class="hero-vertical-center">
+                            <h1 class="hero-number hero-number-small hero-green" id="analysedHero">-</h1>
+                            <p class="hero-desc hero-desc-small">samples analysed</p>
+                            <h1 class="hero-number hero-number-small hero-blue" id="processingHero">-</h1>
+                            <p class="hero-desc hero-desc-small">samples processing</p>
+                            <h1 class="hero-number hero-number-small hero-grey" id="waitingHero">-</h1>
+                            <p class="hero-desc hero-desc-small">waiting for machine</p>
+                        </div>
+                    </div>
+                    <div class="pane" style="padding-left: 2%; padding-right: 2%">
+                        <form id="upload-form" class="form-vertical-center">
+                            <div class="form-group">
+                                <label>Sample</label>
+                                <input type="file" class="form-control" id="sample-file">
+                            </div>
+                            <div class="form-group">
+                                <label>VM</label>
+                                <select class="form-control" id="vm-select">
+                                    <option value="test">Test</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Analysis time (seconds)</label>
+                                <input type="number" min="10" class="form-control" id="run-time">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-form btn-primary" onclick="uploadSample()">Send for analysis</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="toolbar toolbar-footer">
+        <div class="toolbar-actions">
+            <button type="button" class="btn btn-default" onclick="resetApp()">
+                Reset Client
+            </button>
+            <span id="footer-status" style="vertical-align: middle"></span>
+            <button type="button" class="btn btn-primary pull-right" onclick="changePane('upload')">
+                Upload
+            </button>
+            <button type="button" class="btn btn-default pull-right hidden" id="rulesButton" onclick="btnRules()">
+                Download Rules
+            </button>
+            <button type="button" class="btn btn-default pull-right hidden" id="pcapButton" onclick="btnPCAP()">
+                Download PCAP
+            </button>
+        </div>
+    </footer>
+</div>
+</body>
+</html>

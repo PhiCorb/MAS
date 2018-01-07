@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MAS Client</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/roboto.css">
+    <link rel="stylesheet" href="css/opensans.css">
+
+    <link rel="stylesheet" href="css/extra.css">
+    <link rel="stylesheet" href="css/fade.css">
+    <link rel="stylesheet" href="css/video.css">
+    <link rel="stylesheet" href="css/photon-buttons-only.css">
+    <link rel="stylesheet" href="css/photon-form-only.css">
+
+    <!-- Javascript -->
+    <script src="js/config-check.js"></script>
+    <script src="js/setup-form.js"></script>
+    <script src="js/page-change.js"></script>
+
+</head>
+<body>
+<div class="shown" id="splash-page">
+    <video playsinline autoplay muted loop poster="vid/walking-heads/img/walking-heads.jpg" id="bgvid">
+        <source src="vid/walking-heads/webm/walking-heads.webm" type="video/webm">
+        <source src="vid/walking-heads/mp4/walking-heads.mp4" type="video/mp4">
+    </video>
+    <div class="splash">
+        <h1 class="splash-title animate fadeIn one">
+            Hello
+        </h1>
+        <p class="splash-content animate fadeIn two">
+            Welcome to the MAS client
+            <br>
+            We just need to get everything set up, and then you'll be on your way
+        </p>
+        <p class="splash-content animate fadeIn two">
+            <button class="btn btn-large btn-default" id="begin">Begin</button>
+        </p>
+    </div>
+</div>
+<div class="hidden" id="form-page">
+    <h1 class="form-title animate">
+        Client Setup
+    </h1>
+    <p class="form-content animate">
+        We need to know where your server is in order to connect to it.
+        <br>
+        If there's a username/password required, enter them here. Otherwise, leave those fields blank.
+        <br>
+        <form class="animate" id="setup-form">
+            <div class="form-group">
+                <label>Server address</label>
+                <input class="form-control" placeholder="IP address or hostname" id="server" autofocus>
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input class="form-control" placeholder="User" id="user">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" placeholder="Password" id="pass">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-form btn-primary" onclick="saveParams()">Finish</button>
+            </div>
+        </form>
+    </p>
+</div>
+</body>
+</html>
